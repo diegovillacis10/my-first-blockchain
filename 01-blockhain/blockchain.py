@@ -28,13 +28,16 @@ class Blockchain:
     def get_previous_block(self):
         return self.chain[-1]
 
+    def hash_operation(self, new_proof, previous_proof):
+        return hashlib.sha256(str(new_proof**2 - previous_proof**2).encode()).hexdigest()
+
     def proof_of_work(self, previous_proof):
         new_proof = 1
         check_proof = False
         while check_proof is False:
             # no new_proof + previous_proof because it's a simetrical operation
             # (if we change the order of the operators, it doesn't change to output)
-            hash_operation = hashlib.sha256(str(new_proof**2 - previous_proof**2).encode()).hexdigest()
+            hash_operation = hash_operation(new_proof, previous_proof)
             if hash_operation[:4] == '0000':
                 check_proof = True
             else:
@@ -54,7 +57,7 @@ class Blockchain:
                 return False
             previous_proof = previous_block['proof']
             proof = block['proof']
-            hash_operation = hashlib.sha256(str(proof**2 - previous_proof**2).encode()).hexdigest()
+            hash_operation = hash_operation(proof, previous_proof)
             if hash_operation[:4] != '0000':
                 return False
             previous_block = block
